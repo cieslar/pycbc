@@ -773,6 +773,16 @@
                  <span class="s2">&quot;given input file(s), as well as all avaiable functions, &quot;</span>
                  <span class="s2">&quot;run --file-help, along with one or more input files.&quot;</span>
                  <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">lblhelp</span><span class="p">))</span>
+        <span class="n">results_reading_group</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+            <span class="s2">&quot;--constraint&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span> <span class="n">nargs</span><span class="o">=</span><span class="s2">&quot;+&quot;</span><span class="p">,</span> <span class="n">metavar</span><span class="o">=</span><span class="s2">&quot;CONSTRAINT[:FILE]&quot;</span><span class="p">,</span>
+            <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Apply a constraint to the samples. If a file is provided &quot;</span>
+                 <span class="s2">&quot;after the constraint, it will only be applied to the given &quot;</span>
+                 <span class="s2">&quot;file. Otherwise, the constraint will be applied to all &quot;</span>
+                 <span class="s2">&quot;files. Only one constraint may be applied to a file. &quot;</span>
+                 <span class="s2">&quot;Samples that violate the constraint will be removed. Syntax &quot;</span>
+                 <span class="s2">&quot;is python; any parameter or function of parameter can be &quot;</span>
+                 <span class="s2">&quot;used, similar to the parameters argument. Multiple &quot;</span>
+                 <span class="s2">&quot;constraints may be combined by using &#39;&amp;&#39; and &#39;|&#39;.&quot;</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">results_reading_group</span></div></div>
 
 
@@ -812,6 +822,22 @@
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">input_files</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
         <span class="n">input_files</span> <span class="o">=</span> <span class="p">[</span><span class="n">input_files</span><span class="p">]</span>
 
+    <span class="c1"># load constraints</span>
+    <span class="n">constraints</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">if</span> <span class="n">opts</span><span class="o">.</span><span class="n">constraint</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">constraint</span> <span class="ow">in</span> <span class="n">opts</span><span class="o">.</span><span class="n">constraint</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">constraint</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;:&#39;</span><span class="p">))</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+                <span class="n">constraint</span><span class="p">,</span> <span class="n">fn</span> <span class="o">=</span> <span class="n">constraint</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;:&#39;</span><span class="p">)</span>
+                <span class="n">constraints</span><span class="p">[</span><span class="n">fn</span><span class="p">]</span> <span class="o">=</span> <span class="n">constraint</span>
+            <span class="c1"># no file provided, make sure there&#39;s only one constraint</span>
+            <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">opts</span><span class="o">.</span><span class="n">constraint</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;must provide a file to apply constraints &quot;</span>
+                                 <span class="s2">&quot;to if providing more than one constraint&quot;</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="c1"># this means no file, only one constraint, apply to all</span>
+                <span class="c1"># files</span>
+                <span class="n">constraints</span> <span class="o">=</span> <span class="p">{</span><span class="n">fn</span><span class="p">:</span> <span class="n">constraint</span> <span class="k">for</span> <span class="n">fn</span> <span class="ow">in</span> <span class="n">input_files</span><span class="p">}</span>
+                
     <span class="c1"># loop over all input files</span>
     <span class="k">for</span> <span class="n">input_file</span> <span class="ow">in</span> <span class="n">input_files</span><span class="p">:</span>
         <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Reading input file </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">input_file</span><span class="p">)</span>
@@ -828,12 +854,23 @@
                 <span class="n">opts</span><span class="o">.</span><span class="n">parameters</span><span class="p">,</span> <span class="n">fp</span><span class="o">.</span><span class="n">variable_params</span><span class="p">)</span>
 
             <span class="c1"># read samples from file</span>
-            <span class="n">samples</span> <span class="o">=</span> <span class="n">fp</span><span class="o">.</span><span class="n">samples_from_cli</span><span class="p">(</span><span class="n">opts</span><span class="p">,</span> <span class="n">parameters</span><span class="o">=</span><span class="n">file_parameters</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+            <span class="n">samples</span> <span class="o">=</span> <span class="n">fp</span><span class="o">.</span><span class="n">samples_from_cli</span><span class="p">(</span><span class="n">opts</span><span class="p">,</span> <span class="n">parameters</span><span class="o">=</span><span class="n">file_parameters</span><span class="p">,</span>
+                                          <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 
-            <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Using </span><span class="si">{}</span><span class="s2"> samples&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">samples</span><span class="o">.</span><span class="n">size</span><span class="p">))</span>
+            <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Loaded </span><span class="si">{}</span><span class="s2"> samples&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">samples</span><span class="o">.</span><span class="n">size</span><span class="p">))</span>
 
             <span class="c1"># add parameters not included in file</span>
             <span class="n">samples</span> <span class="o">=</span> <span class="n">_transforms</span><span class="o">.</span><span class="n">apply_transforms</span><span class="p">(</span><span class="n">samples</span><span class="p">,</span> <span class="n">ts</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">input_file</span> <span class="ow">in</span> <span class="n">constraints</span><span class="p">:</span>
+                <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Applying constraints&quot;</span><span class="p">)</span>
+                <span class="n">mask</span> <span class="o">=</span> <span class="n">samples</span><span class="p">[</span><span class="n">constraints</span><span class="p">[</span><span class="n">input_file</span><span class="p">]]</span>
+                <span class="n">samples</span> <span class="o">=</span> <span class="n">samples</span><span class="p">[</span><span class="n">mask</span><span class="p">]</span> 
+                <span class="k">if</span> <span class="n">samples</span><span class="o">.</span><span class="n">size</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;No samples remain after constraint </span><span class="si">{}</span><span class="s2"> &quot;</span>
+                                     <span class="s2">&quot;applied&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">constraints</span><span class="p">[</span><span class="n">input_file</span><span class="p">]))</span>
+                <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">{}</span><span class="s2"> samples remain&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">samples</span><span class="o">.</span><span class="n">size</span><span class="p">))</span>
+
 
         <span class="c1"># else do not read samples</span>
         <span class="k">else</span><span class="p">:</span>

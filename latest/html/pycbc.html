@@ -4681,8 +4681,79 @@ of transformed values.</td>
 </dd></dl>
 
 <dl class="class">
+<dt id="pycbc.transforms.LambdaFromMultipleTOVFiles">
+<em class="property">class </em><code class="descclassname">pycbc.transforms.</code><code class="descname">LambdaFromMultipleTOVFiles</code><span class="sig-paren">(</span><em>mass_param</em>, <em>lambda_param</em>, <em>map_file</em>, <em>distance=None</em>, <em>file_columns=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pycbc/transforms.html#LambdaFromMultipleTOVFiles"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pycbc.transforms.LambdaFromMultipleTOVFiles" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#pycbc.transforms.BaseTransform" title="pycbc.transforms.BaseTransform"><code class="xref py py-class docutils literal notranslate"><span class="pre">pycbc.transforms.BaseTransform</span></code></a></p>
+<p>Uses multiple equation of states.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>mass_param</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – The name of the mass parameter to transform.</li>
+<li><strong>lambda_param</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – The name of the tidal deformability parameter that mass_param is to
+be converted to interpolating from the data in the mass-Lambda file.</li>
+<li><strong>mass_lambda_file</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – Path of the mass-Lambda data file. The first column in the data file
+should contain mass values, and the second column Lambda values.</li>
+<li><strong>distance</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.7)"><em>float</em></a><em>, </em><em>optional</em>) – The distance (in Mpc) of the source. Used to redshift the mass. If
+None, then a distance must be provided to the transform.</li>
+<li><strong>file_columns</strong> (<em>list of str</em><em>, </em><em>optional</em>) – The names and order of columns in the <code class="docutils literal notranslate"><span class="pre">mass_lambda_file</span></code>. Must
+contain at least ‘mass’ and ‘lambda’. If not provided, will assume the
+order is (‘radius’, ‘mass’, ‘lambda’).</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="attribute">
+<dt id="pycbc.transforms.LambdaFromMultipleTOVFiles.distance">
+<code class="descname">distance</code><a class="headerlink" href="#pycbc.transforms.LambdaFromMultipleTOVFiles.distance" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the fixed distance to transform mass samples from detector
+to source frame if one is specified.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pycbc.transforms.LambdaFromMultipleTOVFiles.get_eos">
+<code class="descname">get_eos</code><span class="sig-paren">(</span><em>eos_index</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pycbc/transforms.html#LambdaFromMultipleTOVFiles.get_eos"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pycbc.transforms.LambdaFromMultipleTOVFiles.get_eos" title="Permalink to this definition">¶</a></dt>
+<dd><p>Gets the EOS for the given index.</p>
+<p>If the index is not in range returns None.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pycbc.transforms.LambdaFromMultipleTOVFiles.lambda_param">
+<code class="descname">lambda_param</code><a class="headerlink" href="#pycbc.transforms.LambdaFromMultipleTOVFiles.lambda_param" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the output lambda parameter.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pycbc.transforms.LambdaFromMultipleTOVFiles.map_file">
+<code class="descname">map_file</code><a class="headerlink" href="#pycbc.transforms.LambdaFromMultipleTOVFiles.map_file" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the mass data read from the mass-Lambda data file for
+an EOS.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pycbc.transforms.LambdaFromMultipleTOVFiles.mass_param">
+<code class="descname">mass_param</code><a class="headerlink" href="#pycbc.transforms.LambdaFromMultipleTOVFiles.mass_param" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the input mass parameter.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pycbc.transforms.LambdaFromMultipleTOVFiles.name">
+<code class="descname">name</code><em class="property"> = 'lambda_from_multiple_tov_files'</em><a class="headerlink" href="#pycbc.transforms.LambdaFromMultipleTOVFiles.name" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pycbc.transforms.LambdaFromMultipleTOVFiles.transform">
+<code class="descname">transform</code><span class="sig-paren">(</span><em>maps</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pycbc/transforms.html#LambdaFromMultipleTOVFiles.transform"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pycbc.transforms.LambdaFromMultipleTOVFiles.transform" title="Permalink to this definition">¶</a></dt>
+<dd><p>Transforms mass value and eos index into a lambda value</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
 <dt id="pycbc.transforms.LambdaFromTOVFile">
-<em class="property">class </em><code class="descclassname">pycbc.transforms.</code><code class="descname">LambdaFromTOVFile</code><span class="sig-paren">(</span><em>mass_param</em>, <em>lambda_param</em>, <em>mass_lambda_file</em>, <em>distance=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pycbc/transforms.html#LambdaFromTOVFile"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pycbc.transforms.LambdaFromTOVFile" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">pycbc.transforms.</code><code class="descname">LambdaFromTOVFile</code><span class="sig-paren">(</span><em>mass_param</em>, <em>lambda_param</em>, <em>mass_lambda_file</em>, <em>distance=None</em>, <em>file_columns=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pycbc/transforms.html#LambdaFromTOVFile"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pycbc.transforms.LambdaFromTOVFile" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#pycbc.transforms.BaseTransform" title="pycbc.transforms.BaseTransform"><code class="xref py py-class docutils literal notranslate"><span class="pre">pycbc.transforms.BaseTransform</span></code></a></p>
 <p>Transforms mass values corresponding to Lambda values for a given EOS
 interpolating from the mass-Lambda data for that EOS read in from an
@@ -4722,12 +4793,21 @@ with each draw. In that case, the example code block will be:</p>
 be converted to interpolating from the data in the mass-Lambda file.</li>
 <li><strong>mass_lambda_file</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – Path of the mass-Lambda data file. The first column in the data file
 should contain mass values, and the second column Lambda values.</li>
-<li><strong>distance</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.7)"><em>float</em></a><em>, </em><em>optional</em>) – </li>
+<li><strong>distance</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.7)"><em>float</em></a><em>, </em><em>optional</em>) – The distance (in Mpc) of the source. Used to redshift the mass. If
+None, then a distance must be provided to the transform.</li>
+<li><strong>file_columns</strong> (<em>list of str</em><em>, </em><em>optional</em>) – The names and order of columns in the <code class="docutils literal notranslate"><span class="pre">mass_lambda_file</span></code>. Must
+contain at least ‘mass’ and ‘lambda’. If not provided, will assume the
+order is (‘mass’, ‘lambda’).</li>
 </ul>
 </td>
 </tr>
 </tbody>
 </table>
+<dl class="attribute">
+<dt id="pycbc.transforms.LambdaFromTOVFile.data">
+<code class="descname">data</code><a class="headerlink" href="#pycbc.transforms.LambdaFromTOVFile.data" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
 <dl class="attribute">
 <dt id="pycbc.transforms.LambdaFromTOVFile.distance">
 <code class="descname">distance</code><a class="headerlink" href="#pycbc.transforms.LambdaFromTOVFile.distance" title="Permalink to this definition">¶</a></dt>
